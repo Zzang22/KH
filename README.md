@@ -1,2 +1,3 @@
-# KH
-설명글
+# KH-Semi Project
+## 프로젝트 설명
+
