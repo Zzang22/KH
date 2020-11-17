@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="corporationMapper">
+
+ 	<resultMap type="corporationDto" id="corporationDtoMap">
+ 		<result property="member_no" column="MEMBER_NO"/>
+ 		<result property="member_id" column="MEMBER_ID"/>
+ 		<result property="member_pw" column="MEMBER_PW"/>
+ 		<result property="member_name" column="MEMBER_NAME"/>
+ 		<result property="corp_ceo_name" column="CORP_CEO_NAME"/>
+ 		<result property="corp_board_name" column="CORP_BOARD_NAME"/>
+ 		<result property="corp_businessno" column="CORP_BUSINESSNO"/>
+ 		<result property="member_postcode" column="MEMBER_POSTCODE"/>
+ 		<result property="member_addr" column="MEMBER_ADDR"/>
+ 		<result property="member_phone" column="MEMBER_PHONE"/>
+ 		<result property="member_email" column="MEMBER_EMAIL"/>
+ 		<result property="member_enabled" column="MEMBER_ENABLED"/>
+ 		<result property="member_role" column="MEMBER_ROLE"/>
+ 		<result property="corp_countemp" column="CORP_COUNTEMP"/>
+ 		<result property="corp_membership" column="CORP_MEMBERSHIP"/>
+ 	</resultMap>
+
+ 		<!--property : dto의 setter / column : 셀렉트한 결과 컬럼
+ 		이 둘을 서로 매핑시켜주고 있음.--> 	
+
+	<!-- 아이디 중복체크 --> 	
+ 	<select id="selectId" parameterType="String" resultType="Integer">
+ 		SELECT COUNT(*) FROM (SELECT MEMBER_ID FROM MEMBER WHERE MEMBER_ID = #{member_id})
+ 	</select>
+ 	
+ 	<!--  기업회원가입 part01 -->
+ 	<insert id="CorpJoinInsertPartOne" parameterType="corporationDto">
+ 		INSERT INTO MEMBER
+ 		VALUES(MEMBERSEQ.NEXTVAL, #{member_id}, #{member_pw}, #{member_name},null, #{member_postcode,jdbcType=VARCHAR},#{member_addr,jdbcType=VARCHAR},#{member_phone,jdbcType=VARCHAR},#{member_email},'Y','CORP')	
+ 	</insert>
+
+  	<!-- 사업자번호 중복체크 -->
+	<select id="selectB_No" parameterType="String" resultType="Integer">
+		SELECT COUNT(*) FROM (SELECT CORP_BUSINESSNO FROM CORPORATION WHERE CORP_BUSINESSNO = #{corp_businessno})
+	</select>
+	
+	<!--  기업회원가입 part02 -->
+ 	<insert id="CorpJoinInsertPartTwo" parameterType="corporationDto">
+ 		INSERT INTO CORPORATION
+ 		VALUES(#{member_id}, #{corp_businessno}, #{corp_ceo_name}, #{corp_board_name},null,#{corp_countemp,jdbcType=VARCHAR})
+ 	</insert>
+ 	
+ 	<!-- 기업정보 수정을 위한 정보 조회 -->
+ 	 <select id="ShowCorpInfo"	parameterType="String" resultMap="corporationDtoMap">
+	  	SELECT MEMBER_ID, MEMBER_PW, MEMBER_NAME, CORP_CEO_NAME, CORP_BOARD_NAME,
+	  	CORP_BUSINESSNO, MEMBER_POSTCODE, MEMBER_ADDR, MEMBER_PHONE, MEMBER_EMAIL
+	  	FROM MEMBER JOIN CORPORATION USING(MEMBER_ID)
+	  	WHERE MEMBER_ID = #{member_id}
+  	</select>
+  	
+  	<!-- 기업정보 수정 업데이트문 -->  	
+  	<update id="CorpInfo_Update" parameterType="corporationDto">  	
+		UPDATE MEMBER SET MEMBER_PW = #{member_pw}, MEMBER_NAME = #{member_name}, MEMBER_POSTCODE = #{member_postcode}, MEMBER_ADDR = #{member_addr}, MEMBER_PHONE= #{member_phone}, MEMBER_EMAIL=#{member_email}
+		WHERE MEMBER_ID = #{member_id}		
+  	</update>
+  	
+  	<update id="CorpInfo_Update02" parameterType="corporationDto">  
+  		UPDATE CORPORATION SET CORP_CEO_NAME = #{corp_ceo_name}, CORP_BOARD_NAME = #{corp_board_name}
+		WHERE MEMBER_ID = #{member_id}
+	</update>
+  	
+  	
+
+  	<!-- 구매 후 멤버쉽컬럼 변경 -->
+  	<update id="ChangeMemberShip" parameterType="String">
+  		UPDATE CORPORATION
+  		SET CORP_MEMBERSHIP = 'Y'
+  		WHERE MEMBER_ID = #{member_id}
+  	</update>
+  	
+  	<!-- 멤버쉽 구매한 회원 구분하기 -->
+  	<select id="IsMemberShip"  parameterType="String" resultType="Integer">
+  		SELECT COUNT(*)
+  		FROM (SELECT CORP_MEMBERSHIP FROM CORPORATION WHERE MEMBER_ID = #{member_id} AND CORP_MEMBERSHIP = 'Y')
+  	</select>
+  	
+	<!-- 게시글 수 제한 -->
+  	<select id="jobofferlimit" parameterType="String" resultType="Integer">
+  		SELECT COUNT(*) FROM
+  		(SELECT * FROM JOBOFFER 
+  		WHERE MEMBER_NO = 
+  		(SELECT MEMBER_NO FROM MEMBER WHERE MEMBER_ID = #{member_id}))
+  	</select>
+  
+  
+</mapper>
+
+
+

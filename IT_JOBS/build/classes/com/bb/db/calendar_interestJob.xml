@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="interestjobmapper">
+ 	<resultMap type="InterestDto" id="InterestJobMap">
+ 	    <result property="member_no" column="MEMBER_NO" />
+		<result property="member_id" column="MEMBER_ID" />
+		<result property="member_pw" column="MEMBER_PW" />
+		<result property="member_name" column="MEMBER_NAME" />
+		<result property="member_birthday" column="MEMBER_BIRTHDAY" />
+		<result property="member_postcode" column="MEMBER_POSTCODE" />
+		<result property="member_addr" column="MEMBER_ADDR" />
+		<result property="member_phone" column="MEMBER_PHONE" />
+		<result property="member_email" column="MEMBER_EMAIL" />
+		<result property="member_enabled" column="MEMBER_ENABLED" />
+		<result property="member_role" column="MEMBER_ROLE" />
+ 		
+ 		<result property="corp_ceo_name" column="CORP_CEO_NAME"/>
+ 		<result property="corp_board_name" column="CORP_BOARD_NAME"/>
+ 		<result property="corp_countemp" column="CORP_COUNTEMP"/>
+ 		
+ 		<result property="jo_no" column="JO_NO"/>
+ 		<result property="jo_title" column="JO_TITLE"/>
+ 		<result property="jo_content" column="JO_CONTENT"/>
+ 		<result property="jo_field_no" column="JO_FIELD_NO"/>
+ 		<result property="jo_career_no" column="JO_CAREER_NO"/>
+ 		<result property="jo_salary" column="JO_SALARY"/>
+ 		<result property="jo_deadline" column="JO_DEADLINE"/>
+ 		<result property="jo_hit" column="JO_HIT"/>
+ 		
+ 
+ 		<result property="field_name" column="JO_FIELD_NAME"/>
+
+ 		<result property="career_name" column="JO_CAREER_NAME"/>
+ 		
+
+
+ 	</resultMap>
+    
+    <select id="selectdeadline" resultMap="InterestJobMap">
+  		SELECT J.JO_NO, J.JO_TITLE, J.JO_DEADLINE, M.MEMBER_NAME
+		FROM JOBOFFER J INNER JOIN MEMBER M ON J.MEMBER_NO = M.MEMBER_NO
+		WHERE JO_NO IN (SELECT JO_NO FROM INTEREST_JOB WHERE MEMBER_NO = #{member_no})
+    </select>
+ </mapper>

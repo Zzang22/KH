@@ -1,0 +1,99 @@
+@charset "UTF-8";
+
+#calendar {
+	border-collapse: collapse;
+    border : none; /*border: 1px solid gray;*/
+/*    background-color:#F5F5F5;*/
+}
+#calendar, #calendar th, #calendar td, #calendar>caption a, #calendar> a > img, .y, .m {
+	position:relative;
+	left: 180px;
+	top: 100px;
+}/*위에랑 아래꺼 같이 이동시켜주면 다 같이 이동됌!!*/
+#calendar, #calendar th, #calendar td,#calendar> a > img { /*날짜랑 그림*/
+	position: relative;
+	left: 180px;
+	top: 100px;
+	
+}
+
+#dayOf th{
+	background-color: #B22222;
+	color: #F5F5F5;
+	position: relative;
+	
+}
+.day td, .day a { /*날짜 (이동,폰트)*/
+	position: relative;
+	top: 20px;
+	font-family:'Noto Sans KR', sans-serif;
+    
+}
+
+#calendar th {
+	width: 100px;
+	border: none;
+	
+}
+
+#calendar td {
+	width: 130px;
+	height: 150px;
+	border: none;
+	text-align: left;
+	vertical-align: top;
+	position: relative;
+}
+
+.y, .m{
+	font-size: 25px;
+	color: #2E2E2E;
+	position: relative;
+	top: 100px;
+	letter-spacing: 10px;  /*글자간 간격*/
+	text-transform: capitalize;      /*이건 모름*/
+}
+#header, #header a, #header img, .y,.m{ /*caption안에있는*/
+	position: relative;
+	top: 15px;
+	
+}
+
+a {
+	text-decoration: none;
+	font-size: 13pt;
+	position: relative;
+	left: 13px;
+}
+
+#clist> p {
+	font-size: 5px;
+	margin: 1px;
+	color: black;
+	font-weight: bold;
+	position: relative;
+	top: 20px;
+	
+}
+
+#ilist>p {
+	font-weight: bold;
+	color: red;
+	font-size: 7px;
+	
+
+}
+
+/*
+.cPreview {
+	position: absolute;
+	top: -30px;
+	left: 10px;
+	background-color: skyblue;
+	width: 40px;
+	height: 40px;
+	text-align: center;
+	line-height: 40px;
+	border-radius: 40px 40px 40px 1px;
+}
+*/

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bb.rsl">
+
+	<resultMap type="RsLicenseDto" id="RsLicenseDtoMap">
+		<result property="rs_lc_no" column="RS_LC_NO"/>
+		<result property="rs_no" column="RS_NO"/>
+		<result property="rs_lc_name" column="RS_LC_NAME"/>
+		<result property="rs_lc_inst" column="RS_LC_INST"/>
+		<result property="rs_lc_date" column="RS_LC_DATE"/>
+	</resultMap>
+	
+	<select id="selectLicenseList" parameterType="int" resultMap="RsLicenseDtoMap">
+		SELECT *
+		FROM RESUME_LICENSE
+		WHERE RS_NO = #{rs_no}
+		ORDER BY RS_LC_DATE
+	</select>
+	
+	<select id="selectLcNo" parameterType="int" resultMap="RsLicenseDtoMap">
+		SELECT RS_LC_NO FROM RESUME_LICENSE WHERE RS_NO = #{rs_no}
+	</select>
+	
+	<insert id="insertLicense" parameterType="java.util.List">
+		INSERT INTO RESUME_LICENSE
+		SELECT RS_LC_SEQ.NEXTVAL, L.* FROM(
+			<foreach collection="list" item="item" separator="UNION ALL ">
+				SELECT #{item.rs_no} as rs_no,
+					   #{item.rs_lc_name} as rs_lc_name,
+					   #{item.rs_lc_inst} as rs_lc_inst,
+					   #{item.rs_lc_date} as rs_lc_date
+				FROM DUAL
+			</foreach>) L
+	</insert>
+	
+	<update id="updateLicense" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" separator=";" open="DECLARE BEGIN" close="; END;">
+			UPDATE RESUME_LICENSE
+			SET RS_LC_NAME = #{item.rs_lc_name}, RS_LC_INST = #{item.rs_lc_inst}, RS_LC_DATE = #{item.rs_lc_date}
+			WHERE RS_LC_NO = #{item.rs_lc_no}
+		</foreach>
+	</update>
+
+	<delete id="deleteLicense" parameterType="int">
+		DELETE FROM RESUME_LICENSE WHERE RS_LC_NO = #{rs_lc_no}
+	</delete>
+	
+	<delete id="deleteLicenseAll" parameterType="int">
+		DELETE FROM RESUME_LICENSE WHERE RS_NO = #{rs_no}
+	</delete>
+	
+	
+
+	
+</mapper>

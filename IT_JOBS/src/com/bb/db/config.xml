@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd" >
+<configuration>
+
+	<properties resource="com/bb/db/db.properties"></properties>
+	
+	<settings>
+		<setting name="jdbcTypeForNull" value="VARCHAR"/>
+	</settings>
+	
+	<typeAliases>
+		<typeAlias type="com.bb.dto.MemberDto" alias="MemberDto" />
+		<typeAlias type="com.bb.dto.CorporationDto" alias="corporationDto"/>
+		<typeAlias type="com.bb.dto.JobofferDto" alias="jobofferDto"/>
+		<typeAlias type="com.bb.dto.MemberDto_ForCorp" alias="MemberDto_ForCorp" />
+		<typeAlias type="com.bb.dto.JobOfferDivisionListDto" alias="JobOfferDivisionListDto"/>
+		<typeAlias type="com.bb.dto.CustomerServiceDto" alias="CustomerServiceDto"/>
+		<typeAlias type="com.bb.dto.CalendarDto" alias="CalendarDto"/>
+		<typeAlias type="com.bb.dto.Interest_JobDto" alias="InterestDto"/>
+		<typeAlias type="com.bb.dto.Paging_Criteria" alias="Criteria"/>
+		<typeAlias type="com.bb.dto.Paging_PageMaker" alias="PageMaker"/>
+		<typeAlias type="com.bb.dto.ApplicantDto" alias="ApplicantDto"/>
+		<typeAlias type="com.bb.dto.InterestJobDto" alias="InterestJobDto"/>
+		<typeAlias type="com.bb.dto.RsDto" alias="RsDto"/>
+		<typeAlias type="com.bb.dto.RsAcademicDto" alias="RsAcademicDto"/>
+		<typeAlias type="com.bb.dto.RsCareerDto" alias="RsCareerDto"/>
+		<typeAlias type="com.bb.dto.RsLicenseDto" alias="RsLicenseDto"/>
+		<typeAlias type="com.bb.dto.UserBoardDto" alias="UserBoardDto"/>
+		<typeAlias type="com.bb.dto.AnswerBoardDto" alias="AnswerBoardDto"/>
+		<typeAlias type="com.bb.dto.ChatDto" alias="ChatDto"/>
+		<typeAlias type="com.bb.dto.ChatUserDto" alias="ChatUserDto"/>
+		<typeAlias type="com.bb.dto.ChatRoomDto" alias="ChatRoomDto"/>
+		<typeAlias type="com.bb.dto.OpenChatDto" alias="OpenChatDto"/>
+	</typeAliases>
+	
+	<!-- 트랜젝션 관리와 케넥션 풀링을 위한 환경설정 -->
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="${driver}" />
+				<property name="url" value="${url}" />
+				<property name="username" value="${username}" />
+				<property name="password" value="${password}" />
+			</dataSource>
+		</environment>
+	</environments>
+
+	<!-- SQL 코드와 매핑 정의를 가지는 XML 파일인 mapper의 목록을 지정한다.-->
+	<mappers>
+		<mapper resource="com/bb/db/member_mapper.xml" />
+		<mapper resource="com/bb/db/corp_mapper.xml"/>
+		<mapper resource="com/bb/db/member_login_mapper.xml" />
+		<mapper resource="com/bb/db/joboffer_mapper.xml"/>
+		<mapper resource="com/bb/db/admin_corpor_mapper.xml" />
+		<mapper resource="com/bb/db/admin_member_mapper_paging.xml" />	
+		<mapper resource="com/bb/db/joboffer_division_list_mapper.xml" />
+		<mapper resource="com/bb/db/csboard_mapper.xml"/>
+		<mapper resource="com/bb/db/calendar_mapper.xml"/>
+		<mapper resource="com/bb/db/calendar_interestJob.xml"/>
+		<mapper resource="com/bb/db/JobOfferpaging_mapper.xml"/>
+		<mapper resource="com/bb/db/applicant_mapper.xml"/>
+		<mapper resource="com/bb/db/interest_job_mapper.xml"/>
+		<mapper resource="com/bb/db/resume-mapper.xml"/>
+		<mapper resource="com/bb/db/resumeAcademic-mapper.xml"/>
+		<mapper resource="com/bb/db/resumeCareer-mapper.xml"/>
+		<mapper resource="com/bb/db/resumeLicense-mapper.xml"/>
+		<mapper resource="com/bb/db/userboard_mapper.xml"/>
+		<mapper resource="com/bb/db/answerboard_mapper.xml"/>
+		<mapper resource="com/bb/db/chat_mapper.xml"/>
+	</mappers>
+
+</configuration>

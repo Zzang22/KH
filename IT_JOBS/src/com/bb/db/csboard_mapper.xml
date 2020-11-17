@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="csboardmapper">
+
+
+	<resultMap type="CustomerServiceDto" id="csResultMap">
+		<result property="cs_no" column="CS_NO"/>
+		<result property="cs_title" column="CS_TITLE"/>
+		<result property="cs_content" column="CS_CONTENT"/>
+	 	<result property="cs_regdate" column="CS_REGDATE"/>
+	</resultMap>
+
+	<select id="selectList" resultMap='csResultMap'>
+		SELECT CS_NO, CS_TITLE, CS_CONTENT, CS_REGDATE
+		FROM CUSTOMER_SERVICE
+		ORDER BY CS_NO DESC
+	</select>
+
+	<insert id="insert" parameterType="CustomerServiceDto">
+		INSERT INTO CUSTOMER_SERVICE
+		VALUES(CS_SEQ.NEXTVAL, #{cs_title}, #{cs_content}, SYSDATE)
+	</insert>
+	
+
+	
+	<select id="selectOne" resultType='CustomerServiceDto' parameterType="int">
+		SELECT CS_NO, CS_TITLE, CS_CONTENT, CS_REGDATE
+		FROM CUSTOMER_SERVICE
+		WHERE CS_NO = #{cs_no}
+		
+	</select>
+	
+	<update id="update" parameterType='CustomerServiceDto'>
+		UPDATE CUSTOMER_SERVICE
+		SET CS_TITLE= #{cs_title}, CS_CONTENT= #{cs_content}
+		WHERE CS_NO = #{cs_no}
+	</update>
+	
+	<delete id="delete" parameterType="int">
+		DELETE FROM CUSTOMER_SERVICE
+		WHERE CS_NO = #{cs_no}
+	</delete>
+</mapper>
+

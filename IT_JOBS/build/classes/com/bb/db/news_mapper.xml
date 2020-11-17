@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="newsMapper">
+
+<resultMap type="NewsDto" id="NewsDtoMap">
+		<result property="news_writer" column="NEWS_WRITER" />
+		<result property="news_title" column="NEWS_TITLE" />
+		<result property="news_link" column="NEWS_LINK" />
+</resultMap>
+
+
+<select id="itnews" resultMap="NewsDtoMap">
+SELECT
+NEWS_WRITER, NEWS_TITLE, NEWS_LINK FROM ITNEWS
+</select>
+
+
+
+
+
+</mapper>

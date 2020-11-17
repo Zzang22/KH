@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="paging">
+  <!-- 다혜 -->
+  <resultMap type="MemberDto" id="MemberDtoMap">
+  	 <result property="member_no" column="MEMBER_NO"/>
+  	 <result property="member_id" column="MEMBER_ID"/>
+  	 <result property="member_pw" column="MEMBER_PW"/>
+  	 <result property="member_name" column="MEMBER_NAME"/>
+  	 <result property="member_birthday" column="MEMBER_BIRTHDAY"/>
+  	 <result property="member_postcode" column="MEMBER_POSTCODE"/>
+  	 <result property="member_addr" column="MEMBER_ADDR"/>
+  	 <result property="member_phone" column="MEMBER_PHONE"/>
+  	 <result property="member_email" column="MEMBER_EMAIL"/>
+  	 <result property="member_enabled" column="MEMBER_ENABLED"/>
+  	 <result property="member_role" column="MEMBER_ROLE"/>
+  </resultMap>
+  
+  
+  
+<select id="selectList" resultMap="MemberDtoMap">
+  <![CDATA[  
+    SELECT RN, MEMBER_NO , MEMBER_ID, MEMBER_PW, MEMBER_NAME, MEMBER_BIRTHDAY, MEMBER_POSTCODE, MEMBER_ADDR, 
+	       MEMBER_PHONE, MEMBER_EMAIL, MEMBER_ENABLED, MEMBER_ROLE
+    FROM (SELECT ROWNUM AS RN, MEMBER_NO , MEMBER_ID, MEMBER_PW, MEMBER_NAME, MEMBER_BIRTHDAY, MEMBER_POSTCODE, MEMBER_ADDR, 
+	             MEMBER_PHONE, MEMBER_EMAIL, MEMBER_ENABLED, MEMBER_ROLE         
+	      FROM (SELECT * FROM MEMBER WHERE MEMBER_ROLE IN ('USER','ADMIN') ORDER BY MEMBER_NO)) 
+	WHERE RN >=#{startCount} and RN <=#{endCount} ]]>
+  </select>
+  
+  <select id="selectMemberTotal" resultType="int">
+  	SELECT COUNT(*) CNT FROM MEMBER
+  	WHERE MEMBER_ROLE IN ('USER', 'ADMIN')
+  </select>
+  
+</mapper>

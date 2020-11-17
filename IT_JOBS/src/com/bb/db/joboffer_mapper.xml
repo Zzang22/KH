@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="jobofferMapper">
+
+ 	<resultMap type="jobofferDto" id="jobofferDtoMap">
+ 		<result property="member_no" column="MEMBER_NO"/>
+ 		<result property="member_id" column="MEMBER_ID"/>
+ 		<result property="member_name" column="MEMBER_NAME"/>
+ 		<result property="member_addr" column="MEMBER_ADDR"/>
+ 		<result property="member_phone" column="MEMBER_PHONE"/>
+ 		<result property="member_email" column="MEMBER_EMAIL"/>
+ 		
+ 		<result property="corp_ceo_name" column="CORP_CEO_NAME"/>
+ 		<result property="corp_board_name" column="CORP_BOARD_NAME"/>
+ 		<result property="corp_countemp" column="CORP_COUNTEMP"/>
+ 		
+ 		<result property="jo_no" column="JO_NO"/>
+ 		<result property="jo_title" column="JO_TITLE"/>
+ 		<result property="jo_content" column="JO_CONTENT"/>
+ 		
+ 		<result property="jo_field_no" column="JO_FIELD_NO"/>
+ 		
+ 		<result property="jo_career_no" column="JO_CAREER_NO"/>
+ 		
+ 		<result property="jo_salary" column="JO_SALARY"/>
+ 		<result property="jo_deadline" column="JO_DEADLINE"/>
+ 		<result property="jo_hit" column="JO_HIT"/>
+ 		
+ 		<result property="field_name" column="JO_FIELD_NAME"/>
+ 		
+ 		<result property="career_name" column="JO_CAREER_NAME"/>
+
+ 	</resultMap>
+ 	
+ 	<resultMap type="RsDto" id="RsDtoMap">
+       <result property="rs_title" column="RS_TITLE"/>
+       <result property="rs_no" column="RS_NO"/>
+    </resultMap>
+ 	
+ 	
+ 	<select id="Jo_Field_name_list" resultMap="jobofferDtoMap">
+ 		SELECT JO_FIELD_NAME
+ 		FROM JO_FIELD
+ 		ORDER BY JO_FIELD_NO
+ 	</select>
+ 	
+ 	 <select id="Jo_Career_name_list" resultMap="jobofferDtoMap">
+ 		SELECT JO_CAREER_NAME
+ 		FROM JO_CAREER
+ 		ORDER BY JO_CAREER_NO
+ 	</select>
+ 	
+ 	
+
+
+	 <insert id="JobOfferInsert" parameterType="jobofferDto">
+ 	 	INSERT INTO JOBOFFER
+ 	 	VALUES(JOBOFFERSEQ.NEXTVAL, 
+ 	 	(SELECT MEMBER_NO FROM MEMBER WHERE MEMBER_ID = #{member_id}), 
+ 	 	#{jo_title}, #{jo_content},
+ 	 	(SELECT JO_FIELD_NO FROM JO_FIELD WHERE JO_FIELD_NAME = #{field_name}),
+ 	 	(SELECT JO_CAREER_NO FROM JO_CAREER WHERE JO_CAREER_NAME = #{career_name}),
+ 	 	#{jo_salary}, #{jo_deadline}, 0 )
+ 	 </insert>
+
+ 	 
+ 	 <select id="JobOfferList" resultMap="jobofferDtoMap" parameterType="String">		
+ 	 
+				SELECT J.MEMBER_NO,
+				J.JO_NO
+		     , J.JO_TITLE
+		     , J.JO_SALARY
+		     , J.JO_DEADLINE
+		     , J.JO_CONTENT
+		     , F.JO_FIELD_NAME
+		     , C.JO_CAREER_NAME
+		     , M.MEMBER_ID
+		  FROM JOBOFFER J
+		     , JO_FIELD F
+		     , JO_CAREER C
+		     , MEMBER M
+		 WHERE J.MEMBER_NO    = M.MEMBER_NO
+		   AND J.JO_CAREER_NO = C.JO_CAREER_NO
+		   AND J.JO_FIELD_NO  = F.JO_FIELD_NO
+		   AND M.MEMBER_ID    = #{member_id}
+		   ORDER BY J.JO_NO DESC
+		   
+ 	 </select> 
+ 	 
+ 	 
+ 	 <delete id="JobOfferDel" parameterType="int">
+ 	 	DELETE FROM JOBOFFER WHERE JO_NO = #{jo_no}
+ 	 </delete>
+ 	 
+ 	 <update id="JobOfferUpdate" parameterType="jobofferDto">
+ 		 UPDATE JOBOFFER SET
+ 	 	JO_TITLE = #{jo_title},
+ 	 	JO_CONTENT = #{jo_content},
+ 	 	JO_FIELD_NO = (SELECT JO_FIELD_NO FROM JO_FIELD WHERE JO_FIELD_NAME = #{field_name}),
+ 	 	JO_CAREER_NO = (SELECT JO_CAREER_NO FROM JO_CAREER WHERE JO_CAREER_NAME = #{career_name}),
+ 	 	JO_SALARY = #{jo_salary}, 
+ 	 	JO_DEADLINE = #{jo_deadline}
+ 	 	WHERE JO_NO = #{jo_no}
+ 	 		
+ 	 </update>
+ 	 
+ 	 <!-- 보민///////////////////////////////// -->
+ 	 
+	 <select id="applicantList" resultMap="RsDtoMap" parameterType="int">
+      SELECT
+      RS_TITLE,
+      A.RS_NO
+      FROM
+      APPLICANT A,
+      RESUME R
+      WHERE A.RS_NO = R.RS_NO
+      AND JO_NO = 264
+   </select>
+
+</mapper>

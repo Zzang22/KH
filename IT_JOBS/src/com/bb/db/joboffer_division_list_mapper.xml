@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="JobOfferDivisionListMapper">	<!-- 어떤 mapper의 어떤 id인지 알 수 있게 설정해준다 -->
+
+	<resultMap type="JobOfferDivisionListDto" id="JobOfferDivisionListResultMap">	<!-- selectList를 위한 맵핑 -->
+		<result property="member_no" column="MEMBER_NO" />
+		<result property="member_name" column="MEMBER_NAME" />
+		<result property="member_addr" column="MEMBER_ADDR" />
+		<result property="member_phone" column="MEMBER_PHONE" />
+		<result property="member_email" column="MEMBER_EMAIL" />
+		<result property="corp_ceo_name" column="CORP_CEO_NAME" />
+		<result property="corp_board_name" column="CORP_BOARD_NAME" />
+		<result property="corp_countemp" column="CORP_COUNTEMP" />
+		<result property="jo_no" column="JO_NO" />
+		<result property="jo_title" column="JO_TITLE" />
+		<result property="jo_content" column="JO_CONTENT" />
+		<result property="jo_field_no" column="JO_FIELD_NO" />
+		<result property="jo_career_no" column="JO_CAREER_NO" />
+		<result property="jo_salary" column="JO_SALARY" />
+		<result property="jo_deadline" column="JO_DEADLINE" />
+		<result property="jo_hit" column="JO_HIT" />
+		<result property="jo_field_no" column="JO_FIELD_NO" />
+		<result property="jo_field_name" column="JO_FIELD_NAME" />
+		<result property="jo_career_no" column="JO_CAREER_NO" />
+		<result property="jo_career_name" column="JO_CAREER_NAME" />
+		<result property="interest_chk" column="INTEREST_CHK" />
+	</resultMap>
+	
+	<resultMap type="RsDto" id="RsResultMap">
+      <result property="rs_no" column="RS_NO" />
+      <result property="member_no" column="MEMBER_NO" />
+      <result property="rs_img_name" column="RS_IMG_NAME" />
+      <result property="rs_img_path" column="RS_IMG_PATH" />
+      <result property="rs_selfintro" column="RS_SELFINTRO" />
+      <result property="rs_title" column="RS_TITLE" />
+   </resultMap>
+
+	<select id="selectList" parameterType="JobOfferDivisionListDto" resultMap="JobOfferDivisionListResultMap">
+
+<![CDATA[
+SELECT
+JO_NO,
+MEMBER_NAME,
+JO_TITLE,
+JO_DEADLINE,
+JO_HIT
+]]>
+<![CDATA[
+FROM (
+SELECT
+JO_NO,
+MEMBER_NAME,
+JO_TITLE,
+JO_DEADLINE,
+JO_HIT,
+J.JO_FIELD_NO,
+J.JO_CAREER_NO,
+JO_SALARY
+FROM
+MEMBER M,
+JOBOFFER J,
+JO_FIELD J_F,
+JO_CAREER J_C
+WHERE M.MEMBER_NO = J.MEMBER_NO
+AND J.JO_FIELD_NO = J_F.JO_FIELD_NO
+AND J.JO_CAREER_NO = J_C.JO_CAREER_NO
+)
+]]>
+
+<![CDATA[
+WHERE JO_CAREER_NO = #{career }
+AND JO_SALARY >= #{min_salary }
+AND JO_SALARY <= #{max_salary }
+]]>
+<trim prefix="AND (" prefixOverrides="OR" suffix=")">
+<if test="field1 != null">
+	OR JO_FIELD_NO = #{field1 }
+</if>
+<if test="field2 != null">
+	OR JO_FIELD_NO = #{field2 }
+</if>
+<if test="field3 != null">
+	OR JO_FIELD_NO = #{field3 }
+</if>
+<if test="field4 != null">
+	OR JO_FIELD_NO = #{field4 }
+</if>	 
+<if test="field5 != null">
+	OR JO_FIELD_NO = #{field5 }
+</if>
+<if test="field6 != null">
+	OR JO_FIELD_NO = #{field6 }
+</if>
+<if test="field7 != null">
+	OR JO_FIELD_NO = #{field7 }
+</if>
+<if test="field8 != null">
+	OR JO_FIELD_NO = #{field8 }
+</if>
+<if test="field9 != null">
+	OR JO_FIELD_NO = #{field9 }
+</if>
+<if test="field10 != null">
+	OR JO_FIELD_NO = #{field10 }
+</if>
+<if test="field11 != null">
+	OR JO_FIELD_NO = #{field11 }
+</if>
+<if test="field12 != null">
+	OR JO_FIELD_NO = #{field12 }
+</if>
+</trim>
+<![CDATA[
+ORDER BY JO_NO DESC
+]]>
+
+	</select>
+	
+	<select id="selectOne" parameterType="int" resultType="JobOfferDivisionListDto">
+<![CDATA[
+SELECT
+JO_NO,
+JO_TITLE,
+JO_CONTENT,
+JO_SALARY,
+JO_FIELD_NAME,
+JO_CAREER_NAME,
+JO_DEADLINE,
+JO_HIT,
+MEMBER_NAME,
+MEMBER_ADDR,
+MEMBER_PHONE,
+MEMBER_EMAIL,
+CORP_CEO_NAME,
+CORP_BOARD_NAME,
+CORP_COUNTEMP
+FROM
+(
+SELECT *
+FROM
+MEMBER M,
+CORPORATION C,
+JOBOFFER J,
+JO_FIELD J_F,
+JO_CAREER J_C
+WHERE
+M.MEMBER_ID = C.MEMBER_ID
+AND M.MEMBER_NO = J.MEMBER_NO
+AND J.JO_FIELD_NO = J_F.JO_FIELD_NO
+AND J.JO_CAREER_NO = J_C.JO_CAREER_NO
+)
+WHERE JO_NO = ${jo_no}
+]]>
+	</select>
+	
+	<update id="hitUp" parameterType="int">
+<![CDATA[
+UPDATE JOBOFFER
+SET
+JO_HIT = JO_HIT + 1
+WHERE
+JO_NO = ${jo_no}
+]]>
+	</update>
+	
+<select id="myResumeList" parameterType="int" resultMap="RsResultMap">
+<![CDATA[
+SELECT
+RS_NO,
+RS_TITLE
+FROM
+RESUME
+WHERE MEMBER_NO = ${member_no}
+]]>
+   </select>
+   
+   <insert id="applyResume" parameterType="RsDto">
+<![CDATA[
+INSERT INTO APPLICANT
+VALUES(${rs_no}, ${jo_no})
+]]>
+   </insert>
+   
+	
+	
+</mapper>

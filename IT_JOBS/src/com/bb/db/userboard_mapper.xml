@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bb.userboard">
+	
+	<resultMap type="UserBoardDto" id="UserBoardDtoMap">
+		<result property="userboard_no"      column="USERBOARD_NO"/>
+		<result property="member_no"         column="MEMBER_NO"/>
+		<result property="member_id"         column="MEMBER_ID"/>
+		<result property="userboard_title" 	 column="USERBOARD_TITLE"/>
+		<result property="userboard_content" column="USERBOARD_CONTENT"/>
+		<result property="userboard_regdate" column="USERBOARD_REGDATE"/>
+	</resultMap>
+	
+	<select id="selectUserList" resultMap="UserBoardDtoMap">
+		SELECT U.USERBOARD_NO, U.MEMBER_NO, U.USERBOARD_TITLE, U.USERBOARD_CONTENT, U.USERBOARD_REGDATE, M.MEMBER_ID
+		FROM USERBOARD U 
+		JOIN MEMBER M 
+		ON U.MEMBER_NO = M.MEMBER_NO
+	</select>
+	
+	<select id="selectUserOne" parameterType="int" resultType="UserBoardDto">
+		SELECT U.USERBOARD_NO, U.MEMBER_NO, U.USERBOARD_TITLE, U.USERBOARD_CONTENT, U.USERBOARD_REGDATE, M.MEMBER_ID
+		FROM USERBOARD U
+		JOIN MEMBER M
+		
+		ON U.MEMBER_NO = M.MEMBER_NO
+		WHERE USERBOARD_NO = #{userboard_no} 
+	</select>
+	
+	<insert id="UserInsert" parameterType="UserBoardDto">
+	 INSERT INTO USERBOARD
+	 VALUES(USERBOARDSEQ.NEXTVAL, #{member_no}, #{userboard_title}, #{userboard_content}, SYSDATE)
+	</insert>
+	
+	<update id="UserUpdate" parameterType="UserBoardDto">
+	UPDATE USERBOARD
+	SET 
+		USERBOARD_TITLE = #{userboard_title},
+		USERBOARD_CONTENT = #{userboard_content}
+	WHERE USERBOARD_NO = #{userboard_no}  
+	</update>
+	
+	<delete id="UserDelete" parameterType="UserBoardDto">
+		DELETE 
+		FROM USERBOARD
+		WHERE USERBOARD_NO = #{userboard_no}
+	</delete>
+	
+	
+	
+
+	
+	
+
+</mapper>	

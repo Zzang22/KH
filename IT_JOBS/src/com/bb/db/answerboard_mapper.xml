@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bb.answerboard">
+
+	<resultMap type="AnswerBoardDto" id="AnswerBoardDtoMap">
+		<result property="answer_no" column="ANSWER_NO"/>
+		<result property="userboard_no" column="USERBOARD_NO"/>
+		<result property="member_no" column="MEMBER_NO"/>
+		<result property="answer_groupno" column="ANSWER_GROUPNO"/>
+		<result property="answer_groupseq" column="ANSWER_GROUPSEQ"/>
+		<result property="answer_titletab" column="ANSWER_TITLETAB"/>
+		<result property="answer_content" column="ANSWER_CONTENT"/>
+		<result property="answer_regdate" column="ANSWER_REGDATE"/>
+		<result property="answer_delflag" column="ANSWER_DELFLAG"/>
+		<result property="member_id" column="MEMBER_ID"/>
+	</resultMap>
+	
+	
+	<select id="AnswerList" parameterType="int" resultMap="AnswerBoardDtoMap">
+		SELECT A.ANSWER_NO, A.USERBOARD_NO, A.MEMBER_NO, A.ANSWER_GROUPNO, A.ANSWER_GROUPSEQ, A.ANSWER_TITLETAB, A.ANSWER_CONTENT, A.ANSWER_REGDATE, A.ANSWER_DELFLAG, M.MEMBER_ID
+		FROM ANSWERBOARD A
+		JOIN MEMBER M
+		ON A.MEMBER_NO = M.MEMBER_NO
+		WHERE USERBOARD_NO = #{userboard_no}
+		ORDER BY ANSWER_GROUPNO ASC, ANSWER_GROUPSEQ 
+	</select>
+	
+	<insert id="AnswerInsert" parameterType="AnswerBoardDto">
+		INSERT INTO ANSWERBOARD
+		VALUES(ANSWERNOSEQ.NEXTVAL,
+		 #{userboard_no},
+		 #{member_no},
+		 GROUPNOSEQ.NEXTVAL,
+		 1,
+		 0,
+		 #{answer_content},
+		 SYSDATE,
+		 'N'
+		        )
+	</insert>
+	
+	<update id="AnswerUpdate" parameterType="AnswerBoardDto">
+		UPDATE ANSWERBOARD
+		SET ANSWER_CONTENT = #{answer_content},
+			ANSWER_REGDATE = SYSDATE
+			WHERE USERBOARD_NO = #{userboard_no}
+			AND ANSWER_NO = #{answer_no}
+	</update>
+	
+	<delete id="AnswerDelete" parameterType="AnswerBoardDto">
+		DELETE FROM ANSWERBOARD
+		WHERE ANSWER_NO = #{answer_no}
+	</delete>
+	
+	<insert id="AnswerAnswerInsert" parameterType="AnswerBoardDto">
+		INSERT INTO ANSWERBOARD
+		VALUES(
+			ANSWERNOSEQ.NEXTVAL,
+			#{userboard_no},
+			#{member_no},
+			#{answer_groupno},
+			#{answer_groupseq} + 1 ,
+			#{answer_titletab} + 1 ,
+			#{answer_content},
+			SYSDATE,
+			'N')
+	</insert>
+
+	
+	
+	
+
+
+</mapper>

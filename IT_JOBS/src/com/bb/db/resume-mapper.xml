@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bb.rs">
+
+	<resultMap type="RsDto" id="RsDtoMap">
+		<result property="rs_no" column="RS_NO" />
+		<result property="member_no" column="MEMBER_NO" />
+		<result property="rs_img_name" column="RS_IMG_NAME" />
+		<result property="rs_img_path" column="RS_IMG_PATH" />
+		<result property="rs_selfintro" column="RS_SELFINTRO" />
+		<result property="rs_title" column="RS_TITLE"/>
+	</resultMap>
+	
+	<select id="selectResumeList" parameterType="int" resultMap="RsDtoMap">
+	SELECT RS_NO, MEMBER_NO, RS_IMG_NAME, RS_IMG_PATH, RS_SELFINTRO, RS_TITLE
+	FROM RESUME 
+	WHERE MEMBER_NO = #{member_no}
+	ORDER BY RS_NO DESC
+	</select>
+	
+	<select id="selectResumeDetail" parameterType="int" resultMap="RsDtoMap">
+	SELECT RS_NO, MEMBER_NO, RS_IMG_NAME, RS_IMG_PATH, RS_SELFINTRO, RS_TITLE
+	FROM RESUME 
+	WHERE RS_NO = #{rs_no}	
+	</select>
+	
+	
+	<insert id="insertResume" parameterType="RsDto">
+		<selectKey keyProperty="rs_no" resultType="int" order="BEFORE">
+			SELECT RESUMESEQ.NEXTVAL FROM DUAL
+		</selectKey>
+	
+		INSERT INTO RESUME
+		VALUES(#{rs_no}, #{member_no}, #{rs_img_name}, #{rs_img_path}, #{rs_selfintro}, #{rs_title})
+	</insert>
+	
+	<update id="updateResume" parameterType="RsDto">
+	UPDATE RESUME
+	SET RS_IMG_NAME= #{rs_img_name}, 
+		RS_IMG_PATH =#{rs_img_path}, 
+		RS_TITLE = #{rs_title}
+	WHERE RS_NO = #{rs_no}
+	</update>
+	
+	<update id="updateSelfintro" parameterType="RsDto">
+	UPDATE RESUME
+	SET RS_SELFINTRO= #{rs_selfintro}
+	WHERE RS_NO = #{rs_no}
+	</update>
+	
+	<delete id="deleteResume" parameterType="int">
+	DELETE FROM RESUME WHERE RS_NO = #{rs_no}
+	</delete>
+
+
+</mapper>

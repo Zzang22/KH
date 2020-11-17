@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="memberMapper">
+<!-- 최소연 -->
+	<resultMap type="MemberDto" id="MemberDtoMap">
+		<result property="member_no" column="MEMBER_NO" />
+		<result property="member_id" column="MEMBER_ID" />
+		<result property="member_pw" column="MEMBER_PW" />
+		<result property="member_name" column="MEMBER_NAME" />
+		<result property="member_birthday" column="MEMBER_BIRTHDAY" />
+		<result property="member_postcode" column="MEMBER_POSTCODE" />
+		<result property="member_addr" column="MEMBER_ADDR" />
+		<result property="member_phone" column="MEMBER_PHONE" />
+		<result property="member_email" column="MEMBER_EMAIL" />
+		<result property="member_enabled" column="MEMBER_ENABLED" />
+		<result property="member_role" column="MEMBER_ROLE" />
+		<!--property : dto의 setter / column : 셀렉트한  결과 컬럼
+ 		이 둘을 서로 매핑시켜주고 있음.--> 
+	</resultMap>
+	
+	 <resultMap type="ApplicantDto" id="ApplicantDtoMap">
+      	<result property="rs_title" column="RS_TITLE"/>
+      	<result property="jo_title" column="JO_TITLE"/>
+      	<result property="jo_no" column="JO_NO"/>
+      	<result property="rs_no" column="RS_NO"/>
+  	 </resultMap>
+	
+	<!-- 로그인 -->
+	<select id="login" resultMap="MemberDtoMap" parameterType="String">
+	SELECT 
+	MEMBER_NO, MEMBER_ID, MEMBER_PW, MEMBER_NAME, MEMBER_BIRTHDAY, MEMBER_POSTCODE, MEMBER_ADDR, MEMBER_PHONE, MEMBER_EMAIL, MEMBER_ENABLED, MEMBER_ROLE
+	FROM MEMBER
+	WHERE MEMBER_ID = #{member_id} AND MEMBER_PW = #{member_pw}
+	</select>
+
+	<!-- 개인회원가입 --> 
+	<insert id="MemberJoinInsert" parameterType="MemberDto">
+		INSERT INTO MEMBER
+ 		VALUES
+ 		(MEMBERSEQ.NEXTVAL, #{member_id}, #{member_pw}, #{member_name}, #{member_birthday}, #{member_postcode}, #{member_addr}, #{member_phone}, #{member_email}, 'Y','USER')
+	</insert>
+
+	<!-- 아이디 중복체크 -->
+	<select id="selectId" parameterType="String" resultType="Integer">
+ 		SELECT COUNT(*) FROM (SELECT MEMBER_ID FROM MEMBER WHERE MEMBER_ID = #{member_id})
+ 	</select>
+
+
+	<!-- 네이버 로그인 -->
+	<insert id="snslogin" parameterType="MemberDto">								
+	INSERT INTO MEMBER 
+	VALUES(MEMBERSEQ.NEXTVAL, #{member_id}, NULL, #{member_name}, NULL, NULL, NULL, NULL, #{member_email}, 'Y', 'USER')
+	</insert>
+	
+	<!-- 아이디 하나로 정보 다 가져오기 -->
+	<select id="check" resultType="MemberDto" parameterType="String">
+	SELECT 
+	MEMBER_NO, MEMBER_ID, MEMBER_PW, MEMBER_NAME, MEMBER_BIRTHDAY, MEMBER_POSTCODE, MEMBER_ADDR, MEMBER_PHONE, MEMBER_EMAIL, MEMBER_ENABLED, MEMBER_ROLE FROM MEMBER WHERE MEMBER_ID=#{member_id}
+	</select>
+	
+	<!-- 내 정보 수정하기 -->
+	<update id="memberUpdate" parameterType="MemberDto">
+	UPDATE MEMBER SET
+	MEMBER_NAME = #{member_name},
+	MEMBER_PW = #{member_pw},
+	MEMBER_BIRTHDAY = #{member_birthday},
+	MEMBER_POSTCODE = #{member_postcode},
+	MEMBER_ADDR = #{member_addr},
+	MEMBER_PHONE = #{member_phone},
+	MEMBER_EMAIL = #{member_email}
+	WHERE MEMBER_ID = #{member_id}
+	</update>
+	
+	<select id="myApply" resultType="ApplicantDto" parameterType="int">
+SELECT
+JO_TITLE,
+RS_TITLE,
+J.JO_NO,
+R.RS_NO
+FROM
+MEMBER M,
+RESUME R,
+APPLICANT A,
+JOBOFFER J
+WHERE
+M.MEMBER_NO = R.MEMBER_NO
+AND R.RS_NO = A.RS_NO
+AND A.JO_NO = J.JO_NO
+AND M.MEMBER_NO = ${member_no}
+   </select>
+
+</mapper>

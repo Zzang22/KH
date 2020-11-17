@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="interestJobMapper">
+
+	<resultMap type="InterestJobDto" id="InterestJobDtoMap">
+		<result property="member_no" column="MEMBER_NO" />
+		<result property="jo_no" column="jo_no" />
+		 
+	</resultMap>
+	
+	<select id="interestCheck" parameterType="InterestJobDto" resultType="int">
+	SELECT COUNT(*) FROM INTEREST_JOB WHERE MEMBER_NO = #{member_no} AND JO_NO = #{jo_no}
+	</select>
+	
+	<insert id="insertInterestJob" parameterType="InterestJobDto">
+	INSERT INTO INTEREST_JOB
+	VALUES(#{member_no}, #{jo_no})
+	</insert>
+	
+	<delete id="deleteInterestJob" parameterType="InterestJobDto">
+	DELETE FROM INTEREST_JOB
+	WHERE MEMBER_NO = #{member_no} AND JO_NO = #{jo_no}
+	</delete>
+	
+	
+
+</mapper>
+	

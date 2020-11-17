@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bb.rsc">
+
+	<resultMap type="RsCareerDto" id="RsCareerDtoMap">
+		<result property="rs_cr_no" column="RS_CR_NO"/>
+		<result property="rs_no" column="RS_NO"/>
+		<result property="rs_cr_name" column="RS_CR_NAME"/>
+		<result property="rs_cr_duty" column="RS_CR_DUTY"/>
+		<result property="rs_cr_dept" column="RS_CR_DEPT"/>
+		<result property="rs_cr_start_year" column="RS_CR_START_YEAR"/>
+		<result property="rs_cr_start_month" column="RS_CR_START_MONTH"/>
+		<result property="rs_cr_end_year" column="RS_CR_END_YEAR"/>
+		<result property="rs_cr_end_month" column="RS_CR_END_MONTH"/>
+	</resultMap>
+	
+	<select id="selectCareerList" parameterType="int" resultMap="RsCareerDtoMap">
+		SELECT *
+		FROM RESUME_CAREER
+		WHERE RS_NO = #{rs_no}
+		ORDER BY RS_CR_START_YEAR, RS_CR_START_MONTH
+	</select>
+	
+	<select id="selectCrNo" parameterType="int" resultMap="RsCareerDtoMap">
+		SELECT RS_CR_NO FROM RESUME_CAREER WHERE RS_NO = #{rs_no}
+	</select>
+	
+	<insert id="insertCareer" parameterType="java.util.List">
+		INSERT INTO RESUME_CAREER
+		SELECT RS_CR_SEQ.NEXTVAL, C.* FROM(
+			<foreach collection="list" item="item" separator="UNION ALL ">
+				SELECT #{item.rs_no} as rs_no,
+					   #{item.rs_cr_name} as rs_cr_name,
+					   #{item.rs_cr_duty} as rs_cr_duty,
+					   #{item.rs_cr_dept} as rs_cr_dept,
+					   #{item.rs_cr_start_year} as rs_cr_start_year,
+					   #{item.rs_cr_start_month} as rs_cr_start_month,
+					   #{item.rs_cr_end_year} as rs_cr_end_year,
+					   #{item.rs_cr_end_month} as rs_cr_end_month
+				FROM DUAL
+			</foreach>) C
+	</insert>
+	
+	<update id="updateCareer" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" separator=";" open="DECLARE BEGIN" close="; END;">
+			UPDATE RESUME_CAREER
+			SET RS_CR_NAME = #{item.rs_cr_name}, RS_CR_DUTY = #{item.rs_cr_duty}, RS_CR_DEPT = #{item.rs_cr_dept},
+				RS_CR_START_YEAR = #{item.rs_cr_start_year}, RS_CR_START_MONTH = #{item.rs_cr_start_month}, RS_CR_END_YEAR = #{item.rs_cr_end_year}, RS_CR_END_MONTH = #{item.rs_cr_end_month}
+			WHERE RS_CR_NO = #{item.rs_cr_no}
+		</foreach>
+	</update>
+	
+	<delete id="deleteCareer" parameterType="int">
+	DELETE FROM RESUME_CAREER WHERE RS_CR_NO = #{rs_cr_no}
+	</delete>
+	
+	<delete id="deleteCareerAll" parameterType="int">
+	DELETE FROM RESUME_CAREER WHERE RS_NO = #{rs_no}
+	</delete>
+	
+	
+</mapper>

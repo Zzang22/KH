@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="chatMapper">
+
+	<resultMap type="ChatDto" id="ChatDtoMap">
+		<result property="chat_no" column="CHAT_NO" />
+		<result property="chat_room_no" column="CHAT_ROOM_NO" />
+		<result property="member_no" column="MEMBER_NO" />
+		<result property="member_id" column="MEMBER_ID" />
+		<result property="chat_content" column="CHAT_CONTENT" />
+		<result property="chat_regdate" column="CHAT_REGDATE" />
+	</resultMap>
+	
+	<resultMap type="ChatRoomDto" id="ChatRoomDtoMap">
+		<result property="chat_room_no" column="CHAT_ROOM_NO"/>
+		<result property="chat_room_name" column="CHAT_ROOM_NAME"/>
+		<result property="member_no" column="MEMBER_NO"/>		
+		<result property="member_id" column="MEMBER_ID"/>
+		<result property="chat_content" column="CHAT_CONTENT"/>
+		<result property="chat_regdate" column="CHAT_REGDATE"/>
+		<result property="chat_count" column="CHAT_COUNT"/>
+	</resultMap>
+	
+	<resultMap type="ChatUserDto" id="ChatUserDtoMap">
+		<result property="chat_room_no" column="CHAT_ROOM_NO"/>
+		<result property="member_no" column="MEMBER_NO"/>
+		<result property="first_chat_no" column="FIRST_CHAT_NO"/>
+		<result property="last_chat_no" column="LAST_CHAT_NO"/>
+	</resultMap>
+	
+	<resultMap type="OpenChatDto" id="OpenChatDtoMap">
+		<result property="member_no" column="MEMBER_NO"/>
+		<result property="chat_room_no" column="CHAT_ROOM_NO"/>
+		<result property="chat_room_name" column="CHAT_ROOM_NAME"/>
+		<result property="count_member" column="COUNT_MEMBER"/>
+		<result property="last_date" column="LAST_DATE"/>
+	</resultMap>
+	
+	<select id="selectMyChatList" resultMap="ChatRoomDtoMap" parameterType="int">
+		SELECT R.CHAT_ROOM_NO, R.CHAT_ROOM_NAME, C.MEMBER_NO, C.MEMBER_ID, C.CHAT_CONTENT, C.CHAT_REGDATE,
+		(SELECT NVL(COUNT(CHAT_NO),0) FROM CHAT WHERE CHAT_NO > U.LAST_CHAT_NO AND CHAT_ROOM_NO = R.CHAT_ROOM_NO) AS CHAT_COUNT
+		FROM CHAT_ROOM R, CHAT C, CHAT_USER U
+		WHERE R.CHAT_ROOM_NO = C.CHAT_ROOM_NO
+		AND C.CHAT_ROOM_NO = U.CHAT_ROOM_NO
+		AND U.MEMBER_NO = #{member_no}
+		AND C.CHAT_NO IN (SELECT MAX(CHAT_NO) FROM CHAT GROUP BY CHAT_ROOM_NO)
+		ORDER BY C.CHAT_REGDATE DESC
+	</select>
+	
+	<select id="selectChatContentList" resultMap="ChatDtoMap" parameterType="ChatUserDto">
+		SELECT CHAT_NO, CHAT_ROOM_NO, MEMBER_NO, MEMBER_ID, CHAT_CONTENT, CHAT_REGDATE
+		FROM CHAT
+		WHERE CHAT_ROOM_NO IN #{chat_room_no}
+		AND CHAT_NO > (SELECT FIRST_CHAT_NO FROM CHAT_USER WHERE MEMBER_NO = #{member_no} AND CHAT_ROOM_NO = #{chat_room_no})
+		ORDER BY CHAT_REGDATE
+	</select>
+	
+	<select id="selectOpenChatList" resultMap="OpenChatDtoMap" parameterType="int">
+		SELECT CHAT_ROOM_NO, CHAT_ROOM_NAME, 
+		(SELECT COUNT(MEMBER_NO) FROM CHAT_USER WHERE CHAT_ROOM.CHAT_ROOM_NO = CHAT_USER.CHAT_ROOM_NO) AS COUNT_MEMBER,
+		(SELECT MAX(CHAT_REGDATE) FROM CHAT WHERE CHAT_ROOM.CHAT_ROOM_NO = CHAT.CHAT_ROOM_NO) AS LAST_DATE 
+		FROM CHAT_ROOM
+		WHERE CHAT_ROOM_NO NOT IN (SELECT CHAT_ROOM_NO FROM CHAT_USER WHERE MEMBER_NO = #{member_no})
+		ORDER BY CHAT_ROOM_NO DESC
+	</select>
+	
+	<select id="selectUserCount" parameterType="int" resultType="int">
+		SELECT COUNT(*) FROM CHAT_USER WHERE CHAT_ROOM_NO = #{chat_room_no}
+	</select>
+	
+	<select id="selectLastChat" parameterType="int" resultType="int">
+		SELECT MAX(CHAT_NO) FROM CHAT WHERE CHAT_ROOM_NO = #{chat_room_no}
+	</select>
+	
+	<select id="selectPrevChk" parameterType="ChatUserDto" resultType="int">
+		SELECT NVL(COUNT(FIRST_CHAT_NO),0) 
+		FROM CHAT_USER 
+		WHERE CHAT_ROOM_NO = #{chat_room_no}
+		AND MEMBER_NO = #{member_no} 
+		AND FIRST_CHAT_NO = (SELECT NVL(MAX(CHAT_NO),0) FROM CHAT WHERE CHAT_ROOM_NO = #{chat_room_no} )
+	</select>
+	
+	<insert id="insertChat" parameterType="java.util.List">
+		INSERT INTO CHAT
+		SELECT CHAT_SEQ.NEXTVAL, A.* FROM(
+			<foreach collection="list" item="item" separator="UNION ALL ">
+				SELECT #{item.chat_room_no} as chat_room_no,
+					   #{item.member_no} as member_no,
+					   #{item.member_id} as member_id,
+					   #{item.chat_content} as chat_content,
+					   TO_DATE(#{item.chat_regdate}, 'YYYY-MM-DD HH24:MI:SS')
+				FROM DUAL
+			</foreach>) A
+	</insert>
+	
+	<insert id="insertRoom" parameterType="OpenChatDto">
+		<selectKey keyProperty="chat_room_no" resultType="int" order="BEFORE">
+		SELECT CHAT_ROOM_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+		
+		INSERT ALL
+			INTO CHAT_ROOM
+			VALUES(#{chat_room_no}, #{chat_room_name})
+		
+			INTO CHAT_USER
+			VALUES(#{chat_room_no}, #{member_no}, 0, 0)
+		SELECT * FROM DUAL
+	</insert>
+	
+	<insert id="insertOpenChatUser" parameterType="ChatUserDto">
+		INSERT INTO CHAT_USER
+		VALUES(#{chat_room_no}, #{member_no}, 
+			(SELECT NVL(MAX(CHAT_NO),0) FROM CHAT WHERE CHAT_ROOM_NO = #{chat_room_no}),
+			(SELECT NVL(MAX(CHAT_NO),0) FROM CHAT WHERE CHAT_ROOM_NO = #{chat_room_no})
+		)
+	</insert>
+	
+	<update id="updateLastChat" parameterType="ChatUserDto">
+		UPDATE CHAT_USER 
+		SET LAST_CHAT_NO = #{last_chat_no}
+		WHERE CHAT_ROOM_NO = #{chat_room_no} 
+		AND MEMBER_NO = #{member_no}
+	</update>
+	
+	<update id="updateLastChatData" parameterType="ChatUserDto">
+		UPDATE CHAT_USER 
+		SET LAST_CHAT_NO = (SELECT MAX(CHAT_NO) FROM CHAT WHERE CHAT_ROOM_NO = #{chat_room_no})
+		WHERE CHAT_ROOM_NO = #{chat_room_no} 
+		AND MEMBER_NO = #{member_no}
+	</update>
+	
+	<delete id="deleteUser" parameterType="ChatUserDto">
+		DELETE FROM CHAT_USER
+		WHERE CHAT_ROOM_NO = #{chat_room_no}
+		AND MEMBER_NO = #{member_no}
+	</delete>
+	
+	<delete id="deleteChatRoom" parameterType="int">
+		DELETE FROM CHAT_ROOM WHERE CHAT_ROOM_NO = #{chat_room_no}
+	</delete>
+	
+</mapper>

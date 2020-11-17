@@ -1,0 +1,212 @@
+else if("naverlogin".equals(command)) {
+			String clientId = "bGlgaATXhrDCX6ib_fDu";//애플리케이션 클라이언트 아이디값";
+		    String clientSecret = "bTuB3yx5Mn";//애플리케이션 클라이언트 시크릿값";
+		    String code = request.getParameter("code");
+		    String state = request.getParameter("state");
+		    String redirectURI = URLEncoder.encode("http://localhost:8787/semi_project03/member.do?command=naverlogin", "UTF-8");
+		    String apiURL;
+		    apiURL = "https://nid.naver.com/oauth2.0/token?grant_type=authorization_code&";
+		    apiURL += "client_id=" + clientId;
+		    apiURL += "&client_secret=" + clientSecret;
+		    apiURL += "&redirect_uri=" + redirectURI;
+		    apiURL += "&code=" + code;
+		    apiURL += "&state=" + state;
+		    String access_token;
+		    String refresh_token;
+		   // System.out.println("apiURL="+apiURL);
+		    try {
+		      URL url = new URL(apiURL);
+		      HttpURLConnection con = (HttpURLConnection)url.openConnection();
+		      con.setRequestMethod("GET");
+		      int responseCode = con.getResponseCode();
+		      BufferedReader br;
+		     // System.out.print("responseCode="+responseCode);
+		      if(responseCode==200) { // 정상 호출
+		        br = new BufferedReader(new InputStreamReader(con.getInputStream()));
+		      } else {  // 에러 발생
+		        br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+		      }
+		      String inputLine;
+		      StringBuffer res = new StringBuffer();
+		      while ((inputLine = br.readLine()) != null) {
+		        res.append(inputLine);
+		      }
+		      br.close();
+		      if(responseCode==200) {
+		    	
+		    	String json = res.toString();
+		    	
+		    	JSONParser parser =new JSONParser();
+		    	Object obj = parser.parse(json);
+		    	JSONObject jsonObj = (JSONObject)obj;
+		    			        
+		    	access_token = (String)jsonObj.get("access_token");
+		    	refresh_token = (String)jsonObj.get("refresh_token");
+		    	
+		    	String token = access_token; // 네이버 로그인 접근 토큰;
+		        String header = "Bearer " + token; // Bearer 다음에 공백 추가
+
+		        String apiurl = "https://openapi.naver.com/v1/nid/me";
+
+		        Map<String, String> requestHeaders = new HashMap<>();
+		        requestHeaders.put("Authorization", header);
+		        String responseBody = get(apiurl,requestHeaders);
+
+		        Object responseObj = parser.parse(responseBody);
+		        JSONObject resObj = (JSONObject)responseObj;
+		        JSONObject resobj = (JSONObject)resObj.get("response");
+		        
+		        String naverId = (String)resobj.get("id");
+		        String email =(String)resobj.get("email");
+		        String name =(String)resobj.get("name");
+		        String nickName =(String)resobj.get("nickname");
+		        
+		        
+		        
+		        Member_BoardDto dto = new Member_BoardDto();
+		        dto.setId(naverId);
+		        dto.setEmail(email);
+		        dto.setName(name);
+		        dto.setNickname(nickName);
+		        
+		        if(dao.check(naverId) != null) {
+		        	아이디가 있으면 회원가입이 되어있는거
+		        	response.sendRedirect("index.jsp");
+		        	session.setAttribute("login",dto);
+			 		session.setMaxInactiveInterval(-1);
+			 		response.sendRedirect("index.jsp");
+		        }else {
+		        	int snsres = dao.snslogin(dto);
+			        
+			        if(snsres>0){
+			        	System.out.println("db등록완료");
+			        	
+			        }
+			        
+		        }
+		        	
+		        
+		        response.sendRedirect("index.jsp");
+		    	
+		    	
+		    	
+		      }
+		    } catch (Exception e) {
+		      System.out.println(e);
+		    }
+		}
+		
+	}
+	  private static String get(String apiUrl, Map<String, String> requestHeaders){
+	        HttpURLConnection con = connect(apiUrl);
+	        try {
+	            con.setRequestMethod("GET");
+	            for(Map.Entry<String, String> header :requestHeaders.entrySet()) {
+	                con.setRequestProperty(header.getKey(), header.getValue());
+	            }
+
+	            int responseCode = con.getResponseCode();
+	            if (responseCode == HttpURLConnection.HTTP_OK) { // 정상 호출
+	                return readBody(con.getInputStream());
+	            } else { // 에러 발생
+	                return readBody(con.getErrorStream());
+	            }
+	        } catch (IOException e) {
+	            throw new RuntimeException("API 요청과 응답 실패", e);
+	        } finally {
+	            con.disconnect();
+	        }
+	    }
+	  private static HttpURLConnection connect(String apiUrl){
+	        try {
+	            URL url = new URL(apiUrl);
+	            return (HttpURLConnection)url.openConnection();
+	        } catch (MalformedURLException e) {
+	            throw new RuntimeException("API URL이 잘못되었습니다. : " + apiUrl, e);
+	        } catch (IOException e) {
+	            throw new RuntimeException("연결이 실패했습니다. : " + apiUrl, e);
+	        }
+	    }
+
+	    private static String readBody(InputStream body){
+	        InputStreamReader streamReader = new InputStreamReader(body);
+
+	        try (BufferedReader lineReader = new BufferedReader(streamReader)) {
+	            StringBuilder responseBody = new StringBuilder();
+
+	            String line;
+	            while ((line = lineReader.readLine()) != null) {
+	                responseBody.append(line);
+	            }
+
+	            return responseBody.toString();
+	        } catch (IOException e) {
+	            throw new RuntimeException("API 응답을 읽는데 실패했습니다.", e);
+	        }
+	    }
+	    
+	    ============================================================================================
+	    /*
+ 
+	function checkLoginStatus(){
+		var loginBtn = document.querySelector('#loginBtn');
+		var nameTxt = document.querySelector('#name');
+		//로그인이 되어있는 상태
+		if(gauth.isSignedIn.get()){
+			console.log('logined');
+			loginBtn.value = 'Logout';
+			var profile = gauth.currentUser.get().getBasicProfile();
+			console.log(profile.getName());
+			nameTxt.innerHTML = 'Welcome <strong>'+ profile.getName()+'</strong> ';
+		} else {// 아닌 상태
+			console.log('logout');
+			loginBtn.value = 'Login';
+			nextTxt.innerHTML = '';
+		}
+		
+	}
+	
+	function init(){
+		 gapi.load('auth2', function() {
+		//googleapi => platform.js 중에 auth2와 관련된 기능만 부분적으로 load
+		console.log('auth2');
+		window.gauth = gapi.auth2.init({ // window = 전역변수 / var랑 똑같음
+			client_id: '797227422952-p3mr2b5ebjn9ol262r4617c1e9evovpu.apps.googleusercontent.com'
+		})
+		//gauth의 작업이 끝난다면
+		gauth.then(function(){
+			console.log('googleAuth success');
+			checkLoginStatus();
+		}, function(){
+			console.log('googleAuth fail');
+		});
+	});
+	}
+
+
+*/
+
+<!-- 로그인이면 로그아웃 버튼 로그아웃이면 로그인 버튼
+		<td>
+		<span id="name"></span>
+		<input type="button" id="loginBtn" value="checking..." onclick="
+		if(this.value === 'Login') { // 현재 버튼이 login 상태면 logout 되었다는 거니까 로그인 기능 구현
+			gauth.signIn().then(function(){
+				console.log('gauth.signIn()');
+				checkLoginStatus();
+			});
+		} else {
+			gauth.signOut().then(function(){
+				console.log('gauth.signOut()');
+				checkLoginStatus();
+			});
+		}
+		"/>
+		</td>
+		 -->
+		 
+		 <!-- 카카오 연결 -->
+<a href="https://kauth.kakao.com/oauth/authorize?client_id=496ed088e2be4383f019dfb8766244e0&response_type=code&redirect_uri=http://localhost:8787/auth/kakao/callback&response_type=code"><img src="resources/images/kakao_login_medium_narrow.png"></a>
+
+	<!-- 구글 연결 -->
+<script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>

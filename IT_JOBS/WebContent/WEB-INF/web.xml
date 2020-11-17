@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" version="4.0">
+  <display-name>IT_JOBS</display-name>
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
+  
+  <!-- 소연 ==================================================== -->
+  <!-- 개인 회원가입/ 개인기업 로그인 -->
+  <servlet>
+  	<servlet-name>member</servlet-name>
+  	<servlet-class>com.bb.controller.Member_Controller</servlet-class>
+  	</servlet>
+  	<servlet-mapping>
+  	<servlet-name>member</servlet-name>
+  	<url-pattern>/member.do</url-pattern>
+  </servlet-mapping>
+  
+  
+  <!-- 가연==================================================== -->
+  <servlet>
+    <servlet-name>corporation</servlet-name>
+    <servlet-class>com.bb.controller.Corp_Controller</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>corporation</servlet-name>
+    <url-pattern>/corp.do</url-pattern>
+  </servlet-mapping>
+  
+    <servlet>
+    <servlet-name>corp_kakao</servlet-name>
+    <servlet-class>com.bb.controller.Corp_Kakao_Controller</servlet-class>
+  	</servlet>
+  	<servlet-mapping>
+    <servlet-name>corp_kakao</servlet-name>
+    <url-pattern>/kakao.do</url-pattern>
+  	</servlet-mapping>
+  	
+  	
+  	<servlet>
+  	<servlet-name>corp_joboffer</servlet-name>
+  	<servlet-class>com.bb.controller.Corp_Joboffer_Controller</servlet-class>
+  	</servlet>
+  	<servlet-mapping>
+  	<servlet-name>corp_joboffer</servlet-name>
+  	<url-pattern>/offer.do</url-pattern>
+  	</servlet-mapping>
+  	<!-- 보민==================================================== -->
+  	<servlet>
+		<servlet-name>JobOffer_Divsion_List</servlet-name>
+		<servlet-class>com.bb.controller.JobOffer_Division_List_Controller</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>JobOffer_Divsion_List</servlet-name>
+		<url-pattern>/JDL.do</url-pattern>
+	</servlet-mapping>
+  	<!-- 현준==================================================== -->
+  	<servlet>
+  		<servlet-name>resumeController</servlet-name>
+  		<servlet-class>com.bb.controller.IndiMemberServlet</servlet-class>
+  	</servlet>
+  	<servlet-mapping>
+  		<servlet-name>resumeController</servlet-name>
+  		<url-pattern>/indimember.do</url-pattern>
+  	</servlet-mapping>
+  	
+</web-app>

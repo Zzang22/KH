@@ -1,0 +1,4 @@
+driver=org.mariadb.jdbc.Driver
+url=jdbc:mariadb://qclass.iptime.org:3306/master04_semi
+username=master04_semi
+password=semi

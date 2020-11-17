@@ -1,0 +1,39 @@
+#resume-insert-form {
+	position: absolute;
+	top: 10%;
+	left: 25%;
+	margin-bottom: 15%;
+	margin-top: 10%;
+}
+
+fieldset {
+	margin: 50px;
+	margin-left: 0;
+	margin-bottom: 10px;
+	border: 1px solid #cccccc;
+}
+
+input[type=text] {
+	width: 95%;
+}
+
+
+#mainBtn {
+	float: right;
+    margin: 20px;
+}
+
+#updateBtn{
+	margin-right: 50px;
+    float: right;
+}
+
+table, td, th {
+    border: 1px solid #cccccc;
+}
+th{
+	color: #585858;
+}
+legend{
+	color: #848484;
+}

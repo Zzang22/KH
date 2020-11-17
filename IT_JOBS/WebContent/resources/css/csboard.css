@@ -1,0 +1,44 @@
+.questionlist a{
+	cursor: pointer;
+}
+.questionlist .hide{
+	display: none;
+}
+
+
+/*질문 글 색*/
+.m-question, .c-question{
+	color: #4C4C4C;
+}
+/*답변 글 색*/
+p{
+	color: #8C8C8C;
+	font-size: 11px;
+}
+/*더 궁금하신게 있으신가요*/
+.plus-box{
+	clear:left;
+	border: 2px;
+	background-color:#F2F2F2;
+	width: 400px;
+	height: 170px;
+	position: relative;
+	left: 500px;
+	top: 50px;
+}
+#plus-btn h4{
+	position: relative;
+	left: 80px;
+	top: 70px;
+}
+#plus-btn a{
+	text-align: center;
+	position: relative;
+	left: 60px;
+	top: 80px;
+	font-size: 14pt;
+	font-weight: bold;
+	color: gray;
+	text-decoration: none;
+}
+

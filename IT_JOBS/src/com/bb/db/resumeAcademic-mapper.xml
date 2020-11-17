@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bb.rsa">
+
+	<resultMap type="RsAcademicDto" id="RsAcademicDtoMap">
+		<result property="rs_ac_no" column="RS_AC_NO"/>
+		<result property="rs_no" column="RS_NO"/>
+		<result property="rs_ac_name" column="RS_AC_NAME"/>
+		<result property="rs_ac_dept" column="RS_AC_DEPT"/>
+		<result property="rs_ac_grad" column="RS_AC_GRAD"/>
+		<result property="rs_ac_start_year" column="RS_AC_START_YEAR"/>
+		<result property="rs_ac_start_month" column="RS_AC_START_MONTH"/>
+		<result property="rs_ac_end_year" column="RS_AC_END_YEAR"/>
+		<result property="rs_ac_end_month" column="RS_AC_END_MONTH"/>
+	</resultMap>
+	
+	<select id="selectAcademicList" parameterType="int" resultMap="RsAcademicDtoMap">
+		SELECT *
+		FROM RESUME_ACADEMIC
+		WHERE RS_NO = #{rs_no}
+		ORDER BY RS_AC_START_YEAR, RS_AC_START_MONTH
+	</select>
+	
+	<select id="selectAcNo" parameterType="int" resultMap="RsAcademicDtoMap">
+		SELECT RS_AC_NO FROM RESUME_ACADEMIC WHERE RS_NO = #{rs_no}
+	</select>
+	
+	<insert id="insertAcademic" parameterType="RsAcademicDto">
+		INSERT INTO RESUME_ACADEMIC(RS_AC_NO, RS_NO, RS_AC_NAME, RS_AC_DEPT, RS_AC_GRAD, RS_AC_START_YEAR, RS_AC_START_MONTH, RS_AC_END_YEAR, RS_AC_END_MONTH)
+		SELECT RS_AC_SEQ.NEXTVAL, A.* FROM(
+			<foreach collection="list" item="item" separator="UNION ALL ">
+				SELECT #{item.rs_no} AS RS_NO,
+					   #{item.rs_ac_name} AS RS_AC_NAME,
+					   #{item.rs_ac_dept} AS RS_AC_DEPT,
+					   #{item.rs_ac_grad} AS RS_AC_GRAD,
+					   #{item.rs_ac_start_year} AS RS_AC_START_YEAR,
+					   #{item.rs_ac_start_month} AS RS_AC_START_MONTH,
+					   #{item.rs_ac_end_year} AS RS_AC_END_YEAR,
+					   #{item.rs_ac_end_month} AS RS_AC_END_MONTH
+				FROM DUAL
+			</foreach>) A
+	</insert>
+ 
+ 	<update id="updateAcademic" parameterType="java.util.List">
+		<foreach collection="list" item="item" index="index" separator=";" open="DECLARE BEGIN" close="; END;">
+			UPDATE RESUME_ACADEMIC
+			<set>
+				RS_AC_NAME = #{item.rs_ac_name}, RS_AC_DEPT = #{item.rs_ac_dept}, RS_AC_GRAD = #{item.rs_ac_grad},
+				RS_AC_START_YEAR = #{item.rs_ac_start_year}, RS_AC_START_MONTH = #{item.rs_ac_start_month}, 
+				RS_AC_END_YEAR = #{item.rs_ac_end_year}, RS_AC_END_MONTH = #{item.rs_ac_end_month}
+			</set>
+			WHERE RS_AC_NO = #{item.rs_ac_no}
+		</foreach>
+	</update>
+	
+
+	
+	<delete id="deleteAcademic" parameterType="int">
+		DELETE FROM RESUME_ACADEMIC WHERE RS_AC_NO = #{rs_ac_no}
+	</delete>
+	
+	<delete id="deleteAcademicAll" parameterType="int">
+		DELETE FROM RESUME_ACADEMIC WHERE RS_NO = #{rs_no}
+	</delete>
+	
+	
+	
+</mapper>
